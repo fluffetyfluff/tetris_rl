@@ -4,10 +4,10 @@ import tensorflow as tf
 
 games = 1000
 
-explore_rate = 1
-explore_decay = 0.999
+explore_rate = 1 #represents how likely the agent is to take a random action
+explore_decay = 0.999 #likelihood decays every game
 
-actor_learning_rate = 0.003
+actor_learning_rate = 0.003 #tunable parameters
 critic_learning_rate = 0.005
 discount_factor = 0.99
 
@@ -19,7 +19,7 @@ action_size = env.action_space.n
 actor = tf.keras.models.Sequential([
     tf.keras.layers.Dense(64, input_shape=(state_size,), activation="relu"),
     tf.keras.layers.Dense(64, activation="relu"),
-    tf.keras.layers.Dense(action_size, activation="softmax")
+    tf.keras.layers.Dense(action_size, activation="softmax") #softmax outputs probability distribution
 ])
 actor_optimizer = tf.keras.optimizers.Adam(learning_rate=actor_learning_rate)
 
@@ -32,7 +32,7 @@ critic_optimizer = tf.keras.optimizers.Adam(learning_rate = critic_learning_rate
 
 def get_move(state):
     move_probabilities = actor(state)[0]
-    if np.random.random_sample() > explore_rate:
+    if np.random.random_sample() > explore_rate: #probability of taking actual move
         return tf.math.argmax(move_probabilities).numpy()[0]
     else: 
         return np.random.randint(action_size)
@@ -74,13 +74,13 @@ for game in range(games):
             target_value = np.array([-100])
         else:
             td_error = reward + discount_factor * next_value - current_value
-            advantage[current_move] = td_error
+            advantage[current_move] = td_error #advantage actor critic - A2C
             target_value = np.array([td_error - current_value])
         actor_optimizer.apply_gradients(zip(actor_grad(current_state, advantage), actor.trainable_variables))
         critic_optimizer.apply_gradients(zip(critic_grad(current_state, advantage), critic.trainable_variables))
         score += reward
         state = next_state
-        if reward > 1:
+        if reward > 1: #There must have been a line clear!
             print(reward)
         if done:
             print(str(game) + ": " + str(score))

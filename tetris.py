@@ -26,8 +26,8 @@ examples.R
 
 
 
-
-class Tetris(gym.Env):
+#TODO: add render() support
+class Tetris(gym.Env): #this class is OpenAI Gym compatible. 
     def init(self):
         self.board = np.zeros((16, 26), dtype=int)
         self.board[0] = [10] * 26
@@ -190,7 +190,7 @@ class Tetris(gym.Env):
         7: [(6, 1), (6, 2), (7, 2), (8, 2)]
     }
 
-    rotateoffsetscw = {
+    rotateoffsetscw = { #spooky rotation tables
         1: [[[(+2, -1), (+1,  0), ( 0, +1), (-1, +2)], (-2,  0), (+3,  0), (-3, +1), (+3, -3)], #0-1
             [[(+1, +2), ( 0, +1), (-1,  0), (-2, -1)], (-1,  0), (+3,  0), (-3, -2), (+3, +3)], #1-2
             [[(-2, +1), (-1,  0), ( 0, -1), (+1, -2)], (+2,  0), (-3,  0), (+3, -1), (+3, +3)], #2-3
@@ -459,7 +459,7 @@ class Tetris(gym.Env):
             self.board = np.delete(self.board, deletions, axis=1)
             for _ in range(len(deletions)):
                 self.board = np.insert(self.board, 0, [10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10, 10], axis=1)
-            if len(deletions) == 1:
+            if len(deletions) == 1: #SCoreing System rewards line clears, but also rewards 1 on hard drop
                 self.reward += 3
                 self.lastclear = "single"
             if len(deletions) == 2:
